@@ -1,0 +1,26 @@
+{% extends 'forge/base.html' %}
+{% block content %}
+  <div class="container">
+    <h1> Home Page</h1>
+  </div>
+  <hr/>
+  {% if user in users %}
+  <div class="container">
+    <a href="{% url 'world_index' user.username %}"><button>My Worlds</button></a>
+  </div>
+  <hr/>
+  {% endif %}
+  {% for u in users %}
+    {% if u != user %}
+      <div class="container">
+        <a href="{% url 'world_index' u.username %}">{{ u.username }}</a>
+      </div>
+    {% endif %}
+  {% endfor %}
+  <hr/>
+  <div class="container mb-1 mr-1">
+    <h3>In the future this section will contain news and updates</h3>
+  <hr/>
+    <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent feugiat velit urna, non luctus est hendrerit quis. Quisque vehicula malesuada risus non hendrerit. Suspendisse potenti. Sed ullamcorper vestibulum turpis in volutpat. Ut ante arcu, tristique eu justo laoreet, porta vulputate ligula. Donec eget bibendum lacus. Curabitur et augue at nunc pharetra placerat. Pellentesque suscipit facilisis est ut aliquet. Nunc in maximus nunc. Nullam consequat, orci sit amet efficitur ultricies, lorem nunc pharetra arcu, eu lacinia mi est quis urna. Mauris ornare, ex eu sodales faucibus, lacus tellus laoreet ipsum, vitae auctor elit enim sit amet risus. Donec porta in magna et pretium. Sed auctor vel risus sollicitudin pharetra.</p>
+  </div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'forge/base.html' %}
+{% load static %}
+{% block title %}
+- Category Index
+{% endblock %}
+{% block content %}
+{% if world.is_public or is_user %}
+  <div class='container'>
+    <h1> Categories </h1>
+    <a href="{% url 'world_detail' user_obj.username world.name %}">All Tiles</a>
+  </div>
+  {% for category in categories %}
+  <div class="container mb-1 mr-1">
+    <a href="{% url 'category_detail' user_obj.username world.name category.name %}">
+        <h4>{{ category.name }}</h4>
+    </a>
+    <div class="row">
+    {% for thing in things %}
+      {% if thing.category == category %}
+      <div class="mb-1 mr-1">
+        <a href="{% url 'thing_detail' user_obj.username world.name category.name thing.name %}">
+          <img src="{{ thing.image_thumb.url }}" title="{{ thing.name }}">
+        </a>
+      </div>
+      {% endif %}
+    {% endfor %}
+    {% if is_user %}
+      <div class="container">
+        <a href="{% url 'create_thing' user_obj.username world.name 'created_from_category_index' category.name %}"> <!--   -->
+          <img src="{% static 'forge/add_item.png' %}" title="Add new thing to {{ category.name }}">
+        </a>
+      </div>
+    {% endif %}
+    </div>
+  </div>
+{% endfor %}
+{% if is_user %}
+<hr/>
+<div class="container">
+  <a href="{% url 'create_category' user.username world.name 'created_from_category_index' %}">
+    <img src="{% static 'forge/add_item.png' %}" title="Add New Category to {{ world.name }}">
+  </a>
+</div>
+  {% endif %}
+{% else %}
+<h2> This world is set to private</h2>
+{% endif %}
+{% endblock %}

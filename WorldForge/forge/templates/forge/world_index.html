@@ -1,0 +1,28 @@
+{% extends 'forge/base.html' %}
+{% load static %}
+{% block title %}
+- World Index
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <h1>{{ user_obj.username }}</h1>
+  </div>
+  <hr/>
+  <div class="container">
+    <a href="{% url 'forge_home' %}" class="button"><button>Home</button></a>
+  </div>
+  <hr/>
+  {% for world in worlds %}
+    <div class="container mb-1 mr-1">
+      <a href="{% url 'world_detail' user_obj.username world.name %}">
+        <img src="{{ world.image_thumb.url }}" title="{{ world.name }}"/>
+      </a>
+    </div>
+  {% endfor %}
+  {% if is_user %}
+  <hr/>
+  <div class="container">
+    <a href="{% url 'create_world' user.username %}"><img src="{% static 'forge/add_item.png' %}" title="Create New World"></a>
+  </div>
+  {% endif %}
+{% endblock %}

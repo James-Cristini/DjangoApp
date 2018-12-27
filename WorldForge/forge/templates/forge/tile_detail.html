@@ -1,0 +1,67 @@
+<!-- Thiswill function as the detail page for each individual 'tile' -->
+{% extends 'forge/base.html' %}
+{% load static %}
+{% block title %}
+- Tile Detail
+{% endblock %}
+{% block content %}
+{% if world.is_public or is_user %}
+  <div class='container'>
+    <h1>{{ tile.name }}
+        {% if is_user %}
+        <a href="{% url 'update_tile' tile.pk user.username world.name tile.name %}"> (Edit)</a>
+        {% endif %}
+    </h1>
+    <a href="{% url 'world_detail' user_obj.username world.name %}" style='text-decoration: none'>All Tiles</a>
+  </div>
+  <div class="container">
+    <img src="{{ tile.image.url }}">
+  </div>
+  <div class="container">
+  <p> {{ tile.description }}</p>
+  <p> {{ tile.story }}</p>
+  <hr/>
+  {% for category in categories %}
+    <div class="container mb-1 mr-1">
+      <a href="{% url 'category_detail' user_obj.username world.name category.name %}">
+          <h4 style="text-decoration:none">{{ category.name }}</h4>
+      </a>
+      <div class="row">
+      {% for thing in things %}
+        {% if thing.category == category %}
+        <div class="mb-1 mr-1">
+          <a href="{% url 'thing_detail' user_obj.username world.name category.name thing.name %}">
+            <img src="{{ thing.image_thumb.url }}" title="{{ thing.name }}">
+          </a>
+        </div>
+        {% endif %}
+      {% endfor %}
+      {% if is_user %}
+        <div class="mb-1 mr-1">
+          <a href="{% url 'create_thing' user_obj.username world.name tile.name category.name %}">
+            <img src="{% static 'forge/add_item.png' %}" title="Add New Thing">
+          </a>
+        </div>
+      {% endif %}
+      </div>
+    </div>
+    <hr/>
+  {% endfor %}
+  </div>
+  {% if is_user %}
+<div class="container">
+  <a href="{% url 'create_category' user.username world.name tile.name %}">
+    <img src="{% static 'forge/add_item.png' %}" title="Add New Category">
+  </a>
+</div>
+<hr/>
+</br>
+<div class="container">
+    <h2><a href="{% url 'delete_tile' tile.pk user_obj.username world.name tile.name%}"> Delete {{ tile.name }}</a></h2>
+</div>
+</br>
+  {% endif %}
+{% else %}
+<h2> This world is set to private</h2>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'forge/base.html' %}
+{% block title %}
+- Thing Detail
+{% endblock %}
+{% block content %}
+{% if world.is_public or is_user %}
+  <div class='container'>
+    <h1> {{thing.name }}
+        {% if is_user %}
+        <a href="{% url 'update_thing' thing.pk user.username world.name category.name thing.name %}"> (Edit)</a>
+        {% endif %}
+    </h1>
+  </div>
+  <div class="container">
+    <h4>{{ thing.name }}</h4>
+    <a href="{% url 'category_detail' user_obj.username world.name category.name %}"></a>
+    <small>{{ thing.category.name }}</small>
+  </div>
+  <div class="container">
+    <img src="{{thing.image.url }}">
+  </br></br>
+    <p>{{ thing.description }}</p>
+    <hr class="mb-2 mr-4"/>
+    <p>{{ thing.story }}</p>
+  </div>
+  </br>
+  {% for tile in tiles %}
+  <div class="container mb-1 mr-1">
+    <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">{{ tile.name }}</a>
+  </div>
+  <hr/>
+  {% endfor %}
+  {% if is_user %}
+  <div class="container">
+      <h2><a href="{% url 'delete_thing' thing.pk user_obj.username world.name category.name thing.name %}"> Delete {{ thing.name }}</a></h2>
+  </div>
+  {% endif %}
+{% else %}
+<h2> This world is set to private</h2>
+{% endif %}
+{% endblock %}
