@@ -24,14 +24,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarToggle">
           <div class="navbar-nav mr-auto">
-            <a class="nav-item nav-link" href="#">Browse Worlds</a>
+            <a class="nav-item nav-link" href="{% url 'browse_worlds' %}">Browse Worlds</a>
             <a class="nav-item nav-link" href="#">About</a>
           </div>
           <!-- Navbar Right Side -->
           <div class="navbar-nav">
             {% if user.is_authenticated %}
               <a class="nav-item nav-link" href="{% url 'world_index' user.username %}">My Worlds</a>
-              <a class="nav-item nav-link" href="{% url 'profile' %}">My Profile</a>
+              <a class="nav-item nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
               <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
             {% else %}
               <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>

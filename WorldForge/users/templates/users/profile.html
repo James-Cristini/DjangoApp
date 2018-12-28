@@ -23,4 +23,15 @@
       </form>
     </div>
   </div>
+  <div>
+    <h1>My Worlds</h1>
+    {% for world in user_worlds %}
+      <div class="mb-2">
+        <img src="{{ world.image_thumb.url }}">
+        <a href= "{% url 'world_detail' user.username world.name %}"><button>View</button></a>
+        <a href= "{% url 'delete_world' world.pk user.username world.name %}"><button class="del-btn">Delete</button></a>
+      </div>
+      <hr/>
+    {% endfor %}
+  </div>
 {% endblock %}

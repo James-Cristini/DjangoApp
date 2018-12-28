@@ -10,6 +10,7 @@ from PIL import Image
 import os
 
 THUMBNAIL_SIZE = (99, 66)
+WORLD_THUMB_SIZE = (250, 250)
 
 def validate_name(name):
     if '\\' in name or '/' in name:
@@ -77,7 +78,7 @@ class World(models.Model):
         # has a thumbnail() convenience method that contrains proportions.
         # Additionally, we use Image.ANTIALIAS to make the image look better.
         # Without antialiasing the image pattern artifacts may result.
-        image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
+        image.thumbnail(WORLD_THUMB_SIZE, Image.ANTIALIAS)
 
         # Save the thumbnail
         temp_handle = StringIO()

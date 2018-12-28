@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^create_thing/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/(?P<tile_name>[^\\]+)/(?P<category_name>[^\\]+)/$', views.ThingCreateView.as_view(), name='create_thing'),
     url(r'^update_thing/(?P<pk>[0-9]+)/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/(?P<category_name>[^\\]+)/(?P<thing_name>[^\\]+)/$', views.ThingUpdateView.as_view(), name='update_thing'),
     url(r'^delete_thing/(?P<pk>[0-9]+)/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/(?P<category_name>[^\\]+)/(?P<thing_name>[^\\]+)/$', views.ThingDeleteView.as_view(), name='delete_thing'),
+    url(r'^browse_worlds/$', views.browse_worlds, name='browse_worlds'),
     url(r'^(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/categories/$', views.category_index, name='category_index'),
     url(r'^(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/category/(?P<category_name>[^\\]+)/$', views.category_detail, name='category_detail'),
     url(r'^(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/tile/(?P<tile_name>[^\\]+)/$', views.tile_detail, name='tile_detail'),

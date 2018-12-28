@@ -17,6 +17,12 @@ def home(request):
     context = {'users': users}
     return render(request, 'forge/home.html', context)
 
+def browse_worlds(request):
+    """ """
+    worlds = World.objects.filter(is_public=True).order_by('name')
+    context = {'worlds': worlds}
+    return render(request, 'forge/browse_worlds.html', context)
+
 def world_index(request, username):
     """ List of ALL of the user's worlds """
     print username
@@ -121,6 +127,9 @@ def thing_detail(request, username, world_name, category_name, thing_name):
 
 
 class WorldCreateView(LoginRequiredMixin, CreateView):
+    """ Create a new world. Worlds can be created in the "world_index" page IF the session's user
+        matches the world_index of the user. """
+
     model = World
     fields = ['name', 'genre', 'description', 'story', 'image', 'image_credit', 'is_public']
     template_name = 'forge/create_item.html'
@@ -132,6 +141,8 @@ class WorldCreateView(LoginRequiredMixin, CreateView):
         return super(WorldCreateView, self).form_valid(form)
 
 class WorldUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """ Update a world, a world can only be updated by the world's creator. """
+
     model = World
     fields = ['name', 'genre', 'description', 'story', 'image', 'image_credit', 'is_public']
     template_name = 'forge/update_item.html'
@@ -147,6 +158,9 @@ class WorldUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return False
 
 class WorldDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """ Delete a world, removes all contained Tiles/Categories/Things.
+        Worlds can only be deleted from the user's Profile page. """
+
     model = World
     success_url = 'forge_home' # Changes to world_index if UserPassesTestMixin
 
@@ -154,7 +168,7 @@ class WorldDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         obj = self.get_object()
         context = {'username': self.kwargs.get('username')}
         if self.request.user == obj.creator:
-            self.success_url = reverse('world_index', kwargs=context)
+            self.success_url = reverse('profile')
             return True
         else:
             messages.error(self.request, 'You do not have permission to edit that.')
@@ -341,4 +355,6 @@ class ThingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             messages.error(self.request, 'You do not have permission to edit that.')
             return False
 
+### TODO make so world's can only be DELETED on the user's profile page
 ### TODO create a Tile table on world_detail pages, saves location of item in table
+### TODO option to start with a "templated" world? (start with a few categories started)
