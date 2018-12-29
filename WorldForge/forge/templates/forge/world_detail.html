@@ -35,7 +35,7 @@
       {% endfor %}
       {% if is_user %}
       <div class="mb-1 mr-1">
-        <a href="{% url 'create_tile' user_obj.username world.name %}">
+        <a href="{% url 'tile_index' user_obj.username world.name %}">
             <img src="{% static 'forge/add_item.png' %}" title="New Tile">
         </a>
       </div>

@@ -1,3 +1,44 @@
 {% extends 'forge/base.html' %}
 {% block content %}
+<div id="table_div">
+  </br></br>
+    <table id="tile_table">
+      <tbody>
+        {% if tile_matrix %}
+          {% for tile_row in tile_matrix %}
+          <tr>
+            {% for tile in tile_row %}
+              {% if tile.adj %}
+                <td id="tile_thumb">
+                  <a href="{% url 'create_tile' user_obj.username world.name tile.h_pos tile.v_pos %}" title="({{ tile.h_pos }}, {{ tile.v_pos }})">
+                    <img src="\static\forge\blank_adj.jpg" class="img-responsive" class="blank_td">
+                  </a>
+                </td>
+              {% elif tile.creator %}
+                <td id="tile_thumb">
+                  <a href="{% url 'tile_detail' tile.creator.username tile.world.name tile.name %}"  title="{{ tile.title }}">
+                    <img src="{{ tile.image_thumb.url }}" class="img-responsive" class="thumbnail" title="({{ tile.horizontal_position }}, {{ tile.vertical_position }})">
+                  </a>
+                </td>
+              {% else %}
+              <td id="blank_thumb">
+                <img src="\static\forge\blank.jpg" class="img-responsive" class="blank_td">
+              </td>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        {% else %}
+        <h1> no tiles to display :/</h1>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <script>
+
+  function clickFunc() {
+    alert("I am an alert box!");
+  }
+  </script>
 {% endblock %}

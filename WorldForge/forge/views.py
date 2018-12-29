@@ -9,31 +9,41 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from .models import World, Category, Thing, Tile
+from .tile_logic import get_matrix
 
 
 def home(request):
     """ Home Page, log in, can eventually be news/etc. as well. """
     users = User.objects.all()
-    context = {'users': users}
+
+    context = {
+        'users': users
+    }
+
     return render(request, 'forge/home.html', context)
 
 def browse_worlds(request):
     """ """
     worlds = World.objects.filter(is_public=True).order_by('name')
-    context = {'worlds': worlds}
+
+    context = {
+        'worlds': worlds
+        }
+
     return render(request, 'forge/browse_worlds.html', context)
 
 def world_index(request, username):
     """ List of ALL of the user's worlds """
-    print username
     user_obj = User.objects.get(username=username)
     worlds = World.objects.filter(creator=user_obj)
     is_user = True if request.user == user_obj else False
+
     context = {
         'is_user': is_user,
         'user_obj':user_obj,
         'worlds': worlds
         }
+
     return render(request, 'forge/world_index.html', context)
 
 def world_detail(request, username, world_name):
@@ -53,17 +63,35 @@ def world_detail(request, username, world_name):
         'categories':categories,
         'things': things,
         }
+
     return render(request, 'forge/world_detail.html', context)
+
+def tile_index(request, username, world_name):
+    user_obj = User.objects.get(username=username)
+    world = World.objects.get(creator=user_obj, name=world_name)
+    tiles = Tile.objects.filter(creator=user_obj, world=world)
+    is_user = True if request.user == user_obj else False
+    tile_matrix = get_matrix(tiles)
+
+    context = {
+        'is_user': is_user,
+        'user_obj':user_obj,
+        'world': world,
+        'tiles': tiles,
+        'tile_matrix': tile_matrix,
+        }
+
+    return render(request, 'forge/tile_index.html', context)
 
 def tile_detail(request, username, world_name, tile_name):
     """ Detail page for a specific Thing. """
     user_obj = User.objects.get(username=username)
     world = World.objects.get(creator=user_obj, name=world_name)
-    print username, world_name, tile_name
     tile = Tile.objects.get(creator=user_obj, world=world, name=tile_name)
     categories = Category.objects.filter(creator=user_obj, world=world, tile=tile)
     things = Thing.objects.filter(creator=user_obj, world=world, tiles__in=[tile])
     is_user = True if request.user == user_obj else False
+
     context = {
         'is_user': is_user,
         'user_obj':user_obj,
@@ -72,6 +100,7 @@ def tile_detail(request, username, world_name, tile_name):
         'categories': categories,
         'things': things,
         }
+
     return render(request, 'forge/tile_detail.html', context)
 
 def category_index(request, username, world_name):
@@ -81,6 +110,7 @@ def category_index(request, username, world_name):
     categories = Category.objects.filter(creator=user_obj, world=world)
     things = Thing.objects.filter(creator=user_obj, world=world)
     is_user = True if request.user == user_obj else False
+
     context = {
         'is_user': is_user,
         'user_obj':user_obj,
@@ -88,6 +118,7 @@ def category_index(request, username, world_name):
         'categories': categories,
         'things': things,
         }
+
     return render(request, 'forge/category_index.html', context)
 
 def category_detail(request, username, world_name, category_name):
@@ -97,7 +128,7 @@ def category_detail(request, username, world_name, category_name):
     category = Category.objects.get(creator=user_obj, world=world, name=category_name)
     things = Thing.objects.filter(category=category)
     is_user = True if request.user == user_obj else False
-    print 'WORLDNAME', world.name
+
     context = {
         'is_user': is_user,
         'user_obj':user_obj,
@@ -105,6 +136,7 @@ def category_detail(request, username, world_name, category_name):
         'category': category,
         'things': things,
         }
+
     return render(request, 'forge/category_detail.html', context)
 
 def thing_detail(request, username, world_name, category_name, thing_name):
@@ -123,6 +155,7 @@ def thing_detail(request, username, world_name, category_name, thing_name):
         'thing': thing,
         'tiles': tiles,
         }
+
     return render(request, 'forge/thing_detail.html', context)
 
 
@@ -188,6 +221,10 @@ class TileCreateView(LoginRequiredMixin, CreateView):
         world = World.objects.get(creator=user_obj, name=self.kwargs['world_name'])
         form.instance.creator = self.request.user
         form.instance.world = world
+
+        # Positions MUST account for the initial shift applied when moving from 0,0 point to list of list matrix (where the top leftmost essentially becomes 0,0)
+        form.instance.horizontal_position = int(self.kwargs.get('h_pos'))
+        form.instance.vertical_position = int(self.kwargs.get('v_pos'))
         return super(TileCreateView, self).form_valid(form)
 
 
@@ -231,7 +268,6 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         x = self.get_context_data()
-        print x
         user_obj = User.objects.get(username=self.kwargs['username'])
         if self.request.user != user_obj: # Check that the current user matches the creator of world being edited
             messages.error(self.request, 'You do not have permission to edit that world.')
@@ -355,6 +391,7 @@ class ThingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             messages.error(self.request, 'You do not have permission to edit that.')
             return False
 
-### TODO make so world's can only be DELETED on the user's profile page
-### TODO create a Tile table on world_detail pages, saves location of item in table
+### TODO prettify pages, especially tile_index
+
 ### TODO option to start with a "templated" world? (start with a few categories started)
+### TODO Prettify code :/

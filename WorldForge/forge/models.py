@@ -100,7 +100,6 @@ class World(models.Model):
         return reverse('world_index', kwargs={'username':self.creator})
 
 class Tile(models.Model):
-    loc = None # Will be used for determining the location of Tiles in the grid/table on the page itself
     name = models.CharField(max_length=100, validators=[validate_name,])
     description = models.TextField(blank=True)
     story = models.TextField(blank=True)
@@ -111,12 +110,18 @@ class Tile(models.Model):
     image_credit = models.CharField(max_length=120, blank=True)
     str_name = models.CharField(max_length=200, blank=True)
 
+    horizontal_position = models.IntegerField()
+    vertical_position = models.IntegerField()
+
     class Meta:
         ordering = ('str_name',)
         unique_together= (('creator', 'world', 'name'),)
 
     def __str__(self):
         return '{0} -- {1}'.format(self.world.name, self.name)
+
+    def __repr(self):
+        return "'T'"
 
     def save(self, *args, **kwargs):
         self.str_name = '{0} -- {1}'.format(self.world.name, self.name)
