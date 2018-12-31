@@ -9,7 +9,8 @@ from cStringIO import StringIO
 from PIL import Image
 import os
 
-THUMBNAIL_SIZE = (99, 66)
+THUMBNAIL_SIZE = (100, 100)
+TILE_THUMB_SIZE = (150, 150)
 WORLD_THUMB_SIZE = (250, 250)
 
 def validate_name(name):
@@ -170,7 +171,7 @@ class Tile(models.Model):
         # has a thumbnail() convenience method that contrains proportions.
         # Additionally, we use Image.ANTIALIAS to make the image look better.
         # Without antialiasing the image pattern artifacts may result.
-        image.thumbnail(THUMBNAIL_SIZE, Image.ANTIALIAS)
+        image.thumbnail(TILE_THUMB_SIZE, Image.ANTIALIAS)
 
         # Save the thumbnail
         temp_handle = StringIO()
@@ -189,7 +190,7 @@ class Tile(models.Model):
         )
 
     def get_absolute_url(self):
-        return reverse('world_detail', kwargs={'username':self.creator, 'world_name':self.world.name})
+        return reverse('tile_index', kwargs={'username':self.creator, 'world_name':self.world.name})
 
 
 class Category(models.Model): # Tile will be the initial, default Category of Things

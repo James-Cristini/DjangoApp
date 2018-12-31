@@ -3,14 +3,31 @@
 - Thing Detail
 {% endblock %}
 {% block content %}
-{% if world.is_public or is_user %}
-  <div class='container'>
+{% if world.is_public or can_edit %}
+  <div class='center-div'>
+    <ul class="nav nav-pills nav-justified">
+      <li class="nav-item">
+        <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username  %}">{{ user_obj.username }}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
+        </li>
+    </ul>
+    <hr/>
     <h1> {{thing.name }}
-        {% if is_user %}
+        {% if can_edit %}
         <a href="{% url 'update_thing' thing.pk user.username world.name category.name thing.name %}"> (Edit)</a>
         {% endif %}
     </h1>
-  </div>
   <div class="container">
     <h4>{{ thing.name }}</h4>
     <a href="{% url 'category_detail' user_obj.username world.name category.name %}"></a>
@@ -30,9 +47,10 @@
   </div>
   <hr/>
   {% endfor %}
-  {% if is_user %}
-  <div class="container">
-      <h2><a href="{% url 'delete_thing' thing.pk user_obj.username world.name category.name thing.name %}"> Delete {{ thing.name }}</a></h2>
+</div>
+  {% if can_edit %}
+  <div class="center-div">
+      <h2><a href="{% url 'delete_thing' thing.pk user_obj.username world.name category.name thing.name %}"><button class="btn btn-outline-danger">Delete {{ thing.name }}</button></a></h2>
   </div>
   {% endif %}
 {% else %}

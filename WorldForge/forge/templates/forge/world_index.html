@@ -4,25 +4,34 @@
 - World Index
 {% endblock %}
 {% block content %}
-  <div class="container">
+  <div class="center-div">
+      <ul class="nav nav-pills nav-justified">
+          <li class="nav-item">
+            <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username %}">{{ user_obj.username }}</a>
+          </li>
+        </ul>
+    <hr/>
     <h1>{{ user_obj.username }}</h1>
-  </div>
-  <hr/>
-  <div class="container">
-    <a href="{% url 'forge_home' %}" class="button"><button>Home</button></a>
-  </div>
-  <hr/>
-  {% for world in worlds %}
-    <div class="container mb-1 mr-1">
-      <a href="{% url 'world_detail' user_obj.username world.name %}">
-        <img src="{{ world.image_thumb.url }}" title="{{ world.name }}"/>
-      </a>
-    </div>
-  {% endfor %}
-  {% if is_user %}
-  <hr/>
-  <div class="container">
-    <a href="{% url 'create_world' user.username %}"><img src="{% static 'forge/add_item.png' %}" title="Create New World"></a>
-  </div>
-  {% endif %}
+    <hr/>
+    {% for world in worlds %}
+      <div class="container mb-1 mr-1">
+        <a href="{% url 'world_detail' user_obj.username world.name %}">
+          <img src="{{ world.image_thumb.url }}" title="{{ world.name }}" class="hover_img"/>
+        </a>
+      </div>
+    {% endfor %}
+    {% if can_add_world %}
+      <hr/>
+      <div class="container">
+        <a href="{% url 'create_world' user.username %}"><img src="{% static 'forge/add_item.png' %}" title="Create New World" class="hover_img"></a>
+      </div>
+    {% elif can_edit %}
+      <div class="container">
+        <a href="#"><img src="{% static 'forge/add_item.png' %}" style="opacity:.3" title="Cannot create more worlds"></a>
+      </div>
+    {% endif %}
+</div>
 {% endblock %}

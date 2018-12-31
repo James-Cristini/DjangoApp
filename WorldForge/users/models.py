@@ -7,12 +7,53 @@ from cStringIO import StringIO
 from PIL import Image
 import os
 
+
+t1_caps = {
+    'max_worlds': 1,
+    'max_tiles_per_world': 10,
+    'max_categories_per_world': 5,
+    'max_things_per_world': 20,
+}
+
+t2_caps = {
+    'max_worlds': 2,
+    'max_tiles_per_world': 30,
+    'max_categories_per_world': 15,
+    'max_things_per_world': 50,
+}
+
+t3_caps = {
+    'max_worlds': 4,
+    'max_tiles_per_world': 100,
+    'max_categories_per_world': 50,
+    'max_things_per_world': 200,
+}
+
+t5_caps = {
+    'max_worlds': 99999,
+    'max_tiles_per_world': 99999,
+    'max_categories_per_world': 99999,
+    'max_things_per_world': 99999,
+}
+
+TIER_CAPS = {
+ 1: t1_caps,
+ 2: t2_caps,
+ 3: t3_caps,
+ 5: t5_caps,
+}
+
 PROFILE_THUMB_SIZE = (99, 66)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default_profile.jpg', upload_to='profile_pics')
     image_thumb = models.ImageField(default='default_profile_thumb.jpg', upload_to='profile_pics/thumbs')
+
+    user_tier = models.IntegerField(default=1)
+
+    def get_caps(self):
+        return TIER_CAPS[self.user_tier]
 
     def __str__(self):
         return '{0} Profile'.format(self.user.username)
@@ -29,7 +70,7 @@ class Profile(models.Model):
 
         force_update = False
 
-        # If the instance already has been saved, it has an id and we set 
+        # If the instance already has been saved, it has an id and we set
         # force_update to True
         if self.id:
             force_update = True

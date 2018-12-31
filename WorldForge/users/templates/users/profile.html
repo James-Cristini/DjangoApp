@@ -24,12 +24,18 @@
     </div>
   </div>
   <div>
+    <h1>Allowances</h1>
+    <h5>Maximum Worlds: {{ max_worlds }}</h5>
+    <h5>Maximum Tiles per World: {{ max_tiles }}</h5>
+    <h5>Maximum Categories per World: {{ max_categories }}</h5>
+    <h5>Maximum Things per World: {{ max_things }}</h5>
+    <hr/>
     <h1>My Worlds</h1>
     {% for world in user_worlds %}
       <div class="mb-2">
         <img src="{{ world.image_thumb.url }}">
-        <a href= "{% url 'world_detail' user.username world.name %}"><button>View</button></a>
-        <a href= "{% url 'delete_world' world.pk user.username world.name %}"><button class="del-btn">Delete</button></a>
+        <a href= "{% url 'world_detail' user.username world.name %}"><button class="btn btn-outline-primary">View</button></a>
+        <a href= "{% url 'delete_world' world.pk user.username world.name %}"><button class="btn btn-outline-danger">Delete</button></a>
       </div>
       <hr/>
     {% endfor %}

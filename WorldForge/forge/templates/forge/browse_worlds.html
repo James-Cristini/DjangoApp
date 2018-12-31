@@ -4,8 +4,8 @@
   <div class="row">
   {% for world in worlds %}
     <div class="span4 mb-2">
-      <a href="{% url 'world_detail' world.creator.username world.name %}">
-        <img class="mr-1" style="float:left" src="{{ world.image_thumb.url }}"/>
+      <a href="{% url 'tile_index' world.creator.username world.name %}">
+        <img class="mr-1 hover_img" style="float:left" src="{{ world.image_thumb.url }}"/>
       </a>
       <div class="content-heading" style=" overflow:hidden; line-height: 1.2em; max-height: 7.2em">
         <h3>{{ world.name }}</h3>

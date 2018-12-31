@@ -1,6 +1,35 @@
 {% extends 'forge/base.html' %}
+{% load static %}
+
+{% block title %}
+Tile Index
+{% endblock %}
+
 {% block content %}
-<div id="table_div">
+<div class="center-div">
+  <ul class="nav nav-pills nav-justified">
+      <li class="nav-item">
+        <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
+      </li>
+    <li class="nav-item">
+      <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username  %}">{{ user_obj.username }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
+      </li>
+  </ul>
+  <hr/>
+  <a href="{% url 'world_detail' user_obj.username world.name %}">
+    <h1> {{ world.name }}</h1>
+  </a>
+</div>
+<div>
   </br></br>
     <table id="tile_table">
       <tbody>
@@ -8,21 +37,25 @@
           {% for tile_row in tile_matrix %}
           <tr>
             {% for tile in tile_row %}
-              {% if tile.adj %}
-                <td id="tile_thumb">
-                  <a href="{% url 'create_tile' user_obj.username world.name tile.h_pos tile.v_pos %}" title="({{ tile.h_pos }}, {{ tile.v_pos }})">
-                    <img src="\static\forge\blank_adj.jpg" class="img-responsive" class="blank_td">
+              {% if tile.adj and can_add_tile %}
+                <td class="blank_adj">
+                  <a href="{% url 'create_tile' user_obj.username world.name tile.h_pos tile.v_pos %}">
+                    <img src="{% static 'forge/blank_adj.jpg' %}" class="img-responsive" class="blank_adj thumbnail">
                   </a>
+                </td>
+              {% elif tile.adj and can_edit %}
+                <td class="blank_adj">
+                  <img src="{% static 'forge/blank_adj.jpg' %}" class="img-responsive" class="blank_adj thumbnail" style="opacity:.3" title="Cannot add more tiles">
                 </td>
               {% elif tile.creator %}
                 <td id="tile_thumb">
-                  <a href="{% url 'tile_detail' tile.creator.username tile.world.name tile.name %}"  title="{{ tile.title }}">
-                    <img src="{{ tile.image_thumb.url }}" class="img-responsive" class="thumbnail" title="({{ tile.horizontal_position }}, {{ tile.vertical_position }})">
+                  <a href="{% url 'tile_detail' tile.creator.username tile.world.name tile.name %}"  title="{{ tile.name }}">
+                    <img src="{{ tile.image.url }}" class="img-responsive" class="thumbnail">
                   </a>
                 </td>
               {% else %}
               <td id="blank_thumb">
-                <img src="\static\forge\blank.jpg" class="img-responsive" class="blank_td">
+                <img src="{% static 'forge/blank.jpg' %}" class="img-responsive" class="blank thumbnail">
               </td>
               {% endif %}
             </td>
@@ -35,10 +68,14 @@
       </tbody>
     </table>
   </div>
-  <script>
-
-  function clickFunc() {
-    alert("I am an alert box!");
+  <style>
+  table {
+    margin: 0 auto;
   }
+  .blank_adj:hover {
+    opacity:.5;
+  }
+  </style>
+  <script>
   </script>
 {% endblock %}

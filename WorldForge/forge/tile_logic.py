@@ -10,6 +10,12 @@ class AdjacentBlank(object):
     def __repr__(self):
             return 'ADJ'
 
+
+def is_empty(tm):
+    if isinstance(tm, list):
+        return all(map(is_empty, tm))
+    return False
+
 def get_matrix(tiles):
     try:
         # Set up max rows/max cols for the table
@@ -65,6 +71,10 @@ def get_matrix(tiles):
 
     # Specific blank adjacent cells (these will be the cells that can have tiles created within)
     tile_matrix = fill_adj_cells(tile_matrix)
+
+    ### Check if matrix is empty
+    if tile_matrix == [[[], [], []], [[], [], []], [[], [], []]]:
+        tile_matrix[1][1] = AdjacentBlank(0, 0)
 
     return tile_matrix
 

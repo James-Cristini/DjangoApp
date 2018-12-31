@@ -2,10 +2,11 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    url(r'^test_page/$', views.test_page, name='test_page'),
+    url(r'^test_page_val/(?P<val>[^\\]+)$', views.test_func, name='test_func'),
     url(r'^create_world/(?P<username>[A-Za-z0-9]+)/$', views.WorldCreateView.as_view(), name='create_world'),
     url(r'^update_world/(?P<pk>[0-9]+)/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/$', views.WorldUpdateView.as_view(), name='update_world'),
     url(r'^delete_world/(?P<pk>[0-9]+)/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/$', views.WorldDeleteView.as_view(), {'template_name': 'item_confirm_delete.html'}, name='delete_world',),
-    #url(r'^create_tile/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/$', views.TileCreateView.as_view(), name='create_tile'),
     url(r'^create_tile/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/(?P<h_pos>-?\d+)/(?P<v_pos>-?\d+)/$', views.TileCreateView.as_view(), name='create_tile'),
     url(r'^update_tile/(?P<pk>[0-9]+)/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/(?P<tile_name>[^\\]+)/$', views.TileUpdateView.as_view(), name='update_tile'),
     url(r'^delete_tile/(?P<pk>[0-9]+)/(?P<username>[A-Za-z0-9]+)/(?P<world_name>[^\\]+)/(?P<tile_name>[^\\]+)/$', views.TileDeleteView.as_view(), name='delete_tile'),

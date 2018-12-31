@@ -9,15 +9,26 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from .models import World, Category, Thing, Tile
+from users.models import Profile
 from .tile_logic import get_matrix
 
+def test_page(request):
+    context = {}
+    return render(request, 'forge/test.html', context)
+
+def test_func(request, val):
+    print 'VALUE', val
+    return redirect('test_page')
 
 def home(request):
     """ Home Page, log in, can eventually be news/etc. as well. """
     users = User.objects.all()
+    profiles = Profile.objects.all()
 
     context = {
-        'users': users
+        'users': users,
+        'profiles': profiles,
+        'home_active': 'active',
     }
 
     return render(request, 'forge/home.html', context)
@@ -35,13 +46,24 @@ def browse_worlds(request):
 def world_index(request, username):
     """ List of ALL of the user's worlds """
     user_obj = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user_obj)
     worlds = World.objects.filter(creator=user_obj)
-    is_user = True if request.user == user_obj else False
+    can_edit = True if request.user == user_obj else False
+    can_add_world = False
+
+    if request.user == user_obj:
+        can_edit = True
+        caps = profile.get_caps()
+
+        if len(worlds) < caps['max_worlds']:
+            can_add_world = True
 
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
+        'can_add_world': can_add_world,
         'user_obj':user_obj,
-        'worlds': worlds
+        'worlds': worlds,
+        'user_active': 'active',
         }
 
     return render(request, 'forge/world_index.html', context)
@@ -49,36 +71,70 @@ def world_index(request, username):
 def world_detail(request, username, world_name):
     """ Detail page for the given world, shows all Tiles with optional hide/show Categories/Thing list"""
     user_obj = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     tiles = Tile.objects.filter(creator=user_obj, world=world)
     categories = Category.objects.filter(creator=user_obj, world=world)
     things = Thing.objects.filter(creator=user_obj, world=world)
-    is_user = True if request.user == user_obj else False
+    can_edit = False
+    can_add_tile = False
+    can_add_category = False
+    can_add_thing = False
+
+    if request.user == user_obj:
+        can_edit = True
+        caps = profile.get_caps()
+
+        if len(tiles) < caps['max_tiles_per_world']:
+            can_add_tile = True
+
+        if len(categories) < caps['max_categories_per_world']:
+            can_add_category = True
+
+        if len(things) < caps['max_things_per_world']:
+            can_add_thing = True
 
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
+        'can_add_tile': can_add_tile,
+        'can_add_category': can_add_category,
+        'can_add_thing': can_add_thing,
         'user_obj':user_obj,
         'world': world,
         'tiles': tiles,
         'categories':categories,
         'things': things,
+        'world_active': 'active',
         }
 
     return render(request, 'forge/world_detail.html', context)
 
 def tile_index(request, username, world_name):
     user_obj = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     tiles = Tile.objects.filter(creator=user_obj, world=world)
-    is_user = True if request.user == user_obj else False
+
     tile_matrix = get_matrix(tiles)
 
+    can_edit = False
+    can_add_tile = False
+
+    if request.user == user_obj:
+        can_edit = True
+        caps = profile.get_caps()
+
+        if len(tiles) < caps['max_tiles_per_world']:
+            can_add_tile = True
+
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
+        'can_add_tile': can_add_tile,
         'user_obj':user_obj,
         'world': world,
         'tiles': tiles,
         'tile_matrix': tile_matrix,
+        'tiles_active': 'active',
         }
 
     return render(request, 'forge/tile_index.html', context)
@@ -86,14 +142,29 @@ def tile_index(request, username, world_name):
 def tile_detail(request, username, world_name, tile_name):
     """ Detail page for a specific Thing. """
     user_obj = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     tile = Tile.objects.get(creator=user_obj, world=world, name=tile_name)
     categories = Category.objects.filter(creator=user_obj, world=world, tile=tile)
     things = Thing.objects.filter(creator=user_obj, world=world, tiles__in=[tile])
-    is_user = True if request.user == user_obj else False
+    can_edit = False
+    can_add_category = False
+    can_add_thing = False
+
+    if request.user == user_obj:
+        can_edit = True
+        caps = profile.get_caps()
+
+        if len(categories) < caps['max_categories_per_world']:
+            can_add_category = True
+
+        if len(things) < caps['max_things_per_world']:
+            can_add_thing = True
 
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
+        'can_add_category': can_add_category,
+        'can_add_thing': can_add_thing,
         'user_obj':user_obj,
         'world': world,
         'tile': tile,
@@ -106,17 +177,33 @@ def tile_detail(request, username, world_name, tile_name):
 def category_index(request, username, world_name):
     """ Show just an index of ALL categories within the given world. """
     user_obj = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     categories = Category.objects.filter(creator=user_obj, world=world)
     things = Thing.objects.filter(creator=user_obj, world=world)
-    is_user = True if request.user == user_obj else False
+    can_edit = False
+    can_add_category = False
+    can_add_thing = False
+
+    if request.user == user_obj:
+        can_edit = True
+        caps = profile.get_caps()
+
+        if len(categories) < caps['max_categories_per_world']:
+            can_add_category = True
+
+        if len(things) < caps['max_things_per_world']:
+            can_add_thing = True
 
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
+        'can_add_category': can_add_category,
+        'can_add_thing': can_add_thing,
         'user_obj':user_obj,
         'world': world,
         'categories': categories,
         'things': things,
+        'categories_active': 'active',
         }
 
     return render(request, 'forge/category_index.html', context)
@@ -124,13 +211,23 @@ def category_index(request, username, world_name):
 def category_detail(request, username, world_name, category_name):
     """ Details a specific category, functions as an item index for that category as well. """
     user_obj = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     category = Category.objects.get(creator=user_obj, world=world, name=category_name)
     things = Thing.objects.filter(category=category)
-    is_user = True if request.user == user_obj else False
+    can_edit = False
+    can_add_thing = False
+
+    if request.user == user_obj:
+        can_edit = True
+        caps = profile.get_caps()
+
+        if len(things) < caps['max_things_per_world']:
+            can_add_thing = True
 
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
+        'can_add_thing': can_add_thing,
         'user_obj':user_obj,
         'world': world,
         'category': category,
@@ -144,11 +241,11 @@ def thing_detail(request, username, world_name, category_name, thing_name):
     user_obj = User.objects.get(username=username)
     world = World.objects.get(creator=user_obj, name=world_name)
     category = Category.objects.get(creator=user_obj, world=world, name=category_name)
-    thing = Thing.objects.get(creator=user_obj, world=world, name=thing_name)
+    thing = Thing.objects.get(creator=user_obj, world=world, category=category, name=thing_name)
     tiles = thing.tiles.all()
-    is_user = True if request.user == user_obj else False
+    can_edit = True if request.user == user_obj else False
     context = {
-        'is_user': is_user,
+        'can_edit': can_edit,
         'user_obj':user_obj,
         'world': world,
         'category': category,
@@ -168,9 +265,19 @@ class WorldCreateView(LoginRequiredMixin, CreateView):
     template_name = 'forge/create_item.html'
 
     def form_valid(self, form):
-        form.instance.creator = self.request.user
+        user = self.request.user
+        form.instance.creator = user
         ### Currently able to create a new world through direct url containing a differnt user's username but still creates the world on the request.user's page
         # e.g. user jacristi can go to forge/newuser1/create_new_world/ and create a new world, but the world is created on jacristi's page/profile
+
+        profile = Profile.objects.get(user=user)
+        user_worlds = World.objects.filter(creator=user)
+
+        caps = profile.get_caps()
+        if len(user_worlds) >= caps['max_worlds']:
+            messages.error(self.request, 'You cannot create any more Worlds.')
+            return redirect('forge_home')
+
         return super(WorldCreateView, self).form_valid(form)
 
 class WorldUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -214,17 +321,27 @@ class TileCreateView(LoginRequiredMixin, CreateView):
     template_name = 'forge/create_item.html'
 
     def form_valid(self, form):
+        user = self.request.user
         user_obj = User.objects.get(username=self.kwargs['username'])
-        if self.request.user != user_obj: # Check that the current user matches the creator of world being edited
+        if user != user_obj: # Check that the current user matches the creator of world being edited
             messages.error(self.request, 'You do not have permission to edit that world.')
             return redirect('forge_home')
         world = World.objects.get(creator=user_obj, name=self.kwargs['world_name'])
-        form.instance.creator = self.request.user
+        form.instance.creator = user
         form.instance.world = world
 
         # Positions MUST account for the initial shift applied when moving from 0,0 point to list of list matrix (where the top leftmost essentially becomes 0,0)
         form.instance.horizontal_position = int(self.kwargs.get('h_pos'))
         form.instance.vertical_position = int(self.kwargs.get('v_pos'))
+
+        profile = Profile.objects.get(user=user)
+        user_tiles = Tile.objects.filter(creator=user, world=world)
+
+        caps = profile.get_caps()
+        if len(user_tiles) >= caps['max_tiles_per_world']:
+            messages.error(self.request, 'You cannot create any more Tiles.')
+            return redirect('forge_home')
+
         return super(TileCreateView, self).form_valid(form)
 
 
@@ -267,9 +384,9 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     template_name = 'forge/create_item.html'
 
     def form_valid(self, form):
-        x = self.get_context_data()
+        user = self.request.user
         user_obj = User.objects.get(username=self.kwargs['username'])
-        if self.request.user != user_obj: # Check that the current user matches the creator of world being edited
+        if user != user_obj: # Check that the current user matches the creator of world being edited
             messages.error(self.request, 'You do not have permission to edit that world.')
             return redirect('forge_home')
         world = World.objects.get(creator=user_obj, name=self.kwargs['world_name'])
@@ -282,11 +399,19 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
             tile_obj = Tile.objects.get(creator=user_obj, world=world, name=tile_src)
             form.instance.created_tile_name = tile_obj.name
 
-        form.instance.creator = self.request.user
+        form.instance.creator = user
         form.instance.world = world
         super(CategoryCreateView, self).form_valid(form)
         if tile_obj:
             form.instance.tile.add(tile_obj)
+
+        profile = Profile.objects.get(user=user)
+        user_categories = Category.objects.filter(creator=user, world=world)
+
+        caps = profile.get_caps()
+        if len(user_categories) >= caps['max_categories_per_world']:
+            messages.error(self.request, 'You cannot create any more Categories.')
+            return redirect('forge_home')
 
         return redirect(form.instance.get_absolute_url())
 
@@ -331,8 +456,9 @@ class ThingCreateView(LoginRequiredMixin, CreateView):
     template_name = 'forge/create_item.html'
 
     def form_valid(self, form):
+        user = self.request.user
         user_obj = User.objects.get(username=self.kwargs['username'])
-        if self.request.user != user_obj: # Check that the current user matches the creator of world being edited
+        if user != user_obj: # Check that the current user matches the creator of world being edited
             messages.error(self.request, 'You do not have permission to edit that world.')
             return redirect('forge_home')
         world = World.objects.get(creator=user_obj, name=self.kwargs['world_name'])
@@ -347,12 +473,20 @@ class ThingCreateView(LoginRequiredMixin, CreateView):
             tile_obj = Tile.objects.get(creator=user_obj, world=world, name=tile_src)
             form.instance.created_tile_name = tile_obj.name
 
-        form.instance.creator = self.request.user
+        form.instance.creator = user
         form.instance.world = world
         form.instance.category = category
         super(ThingCreateView, self).form_valid(form)
         if tile_obj:
             form.instance.tiles.add(tile_obj)
+
+        profile = Profile.objects.get(user=user)
+        user_things = Thing.objects.filter(creator=user, world=world)
+
+        caps = profile.get_caps()
+        if len(user_things) >= caps['max_things_per_world']:
+            messages.error(self.request, 'You cannot create any more Things.')
+            return redirect('forge_home')
 
         return redirect(form.instance.get_absolute_url())
 
@@ -391,7 +525,12 @@ class ThingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             messages.error(self.request, 'You do not have permission to edit that.')
             return False
 
-### TODO prettify pages, especially tile_index
 
-### TODO option to start with a "templated" world? (start with a few categories started)
+### TODO collapse-able sections for Tiles/Categories on detail pages
+### TODO Able to add existing Things to multiple tiles without leaving the page (click a button in each category to see list of existing things to add?)
+### TODO Merge Detail and Update views so the user can view AND change a World/Tile/Category/Thing on the same page
+
+### TODO Disable registration (for now) make it so a user must be invited and given a username/password that they can then use and change password for
+### TODO prettify pages, especially tile_index
+### TODO option to start with a "templated" world? (start with a few categories already in place)
 ### TODO Prettify code :/

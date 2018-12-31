@@ -5,15 +5,36 @@
 - Tile Detail
 {% endblock %}
 {% block content %}
-{% if world.is_public or is_user %}
-  <div class='container'>
+{% if world.is_public or can_edit %}
+<div class="center-div">
+  <ul class="nav nav-pills nav-justified">
+    <li class="nav-item">
+      <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username  %}">{{ user_obj.username }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
+    </li>
+    <hr/>
+</ul>
+<hr/>
+  <a href="{% url 'world_detail' user_obj.username world.name %}">
+    <h1> {{ world.name }}</h1>
+  </a>
+    <hr/>
     <h1>{{ tile.name }}
-        {% if is_user %}
-        <a href="{% url 'update_tile' tile.pk user.username world.name tile.name %}"> (Edit)</a>
-        {% endif %}
+      {% if can_edit %}
+      <a href="{% url 'update_tile' tile.pk user.username world.name tile.name %}"> (Edit)</a>
+      {% endif %}
     </h1>
-    <a href="{% url 'world_detail' user_obj.username world.name %}" style='text-decoration: none'>All Tiles</a>
-  </div>
   <div class="container">
     <img src="{{ tile.image.url }}">
   </div>
@@ -36,7 +57,7 @@
         </div>
         {% endif %}
       {% endfor %}
-      {% if is_user %}
+      {% if can_edit %}
         <div class="mb-1 mr-1">
           <a href="{% url 'create_thing' user_obj.username world.name tile.name category.name %}">
             <img src="{% static 'forge/add_item.png' %}" title="Add New Thing">
@@ -48,16 +69,17 @@
     <hr/>
   {% endfor %}
   </div>
-  {% if is_user %}
+  {% if can_edit %}
 <div class="container">
   <a href="{% url 'create_category' user.username world.name tile.name %}">
     <img src="{% static 'forge/add_item.png' %}" title="Add New Category">
   </a>
 </div>
+</div>
 <hr/>
 </br>
-<div class="container">
-    <h2><a href="{% url 'delete_tile' tile.pk user_obj.username world.name tile.name%}"> Delete {{ tile.name }}</a></h2>
+<div class="center-div">
+    <h2><a href="{% url 'delete_tile' tile.pk user_obj.username world.name tile.name%}"><button class="btn btn-outline-danger">Delete {{ tile.name }}</button></a></h2>
 </div>
 </br>
   {% endif %}
