@@ -1,0 +1,26 @@
+<ul class="nav nav-pills nav-justified">
+    <li class="nav-item">
+      <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
+    </li>
+    {% if user_obj %}
+    <li class="nav-item">
+      <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username %}">{{ user_obj.username }}</a>
+    </li>
+    {% elif user in users %}
+    <li class="nav-item">
+      <a class="nav-link {{ user_active }}" href="{% url 'world_index' user.username  %}">My Worlds</a>
+    </li>
+    {% endif %}
+    {% if user_obj and world %}
+    <li class="nav-item">
+      <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
+    </li>
+    {% endif %}
+  </ul>
+<hr/>

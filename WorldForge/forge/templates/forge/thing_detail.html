@@ -1,28 +1,12 @@
 {% extends 'forge/base.html' %}
+{% load static %}
 {% block title %}
 - Thing Detail
 {% endblock %}
 {% block content %}
 {% if world.is_public or can_edit %}
   <div class='center-div'>
-    <ul class="nav nav-pills nav-justified">
-      <li class="nav-item">
-        <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username  %}">{{ user_obj.username }}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
-      </li>
-      <li class="nav-item">
-          <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
-        </li>
-    </ul>
-    <hr/>
+    {% include 'forge/sub_nav.html' %}
     <h1> {{thing.name }}
         {% if can_edit %}
         <a href="{% url 'update_thing' thing.pk user.username world.name category.name thing.name %}"> (Edit)</a>
@@ -34,7 +18,11 @@
     <small>{{ thing.category.name }}</small>
   </div>
   <div class="container">
-    <img src="{{thing.image.url }}">
+    {% if thing.image %}
+    <img src="{{ thing.image.url }}"/>
+    {% else %}
+    <img src="{% static 'forge/default_thing.jpg' %}"/>
+    {% endif %}
   </br></br>
     <p>{{ thing.description }}</p>
     <hr class="mb-2 mr-4"/>

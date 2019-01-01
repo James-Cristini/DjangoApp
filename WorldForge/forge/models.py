@@ -25,8 +25,8 @@ class World(models.Model):
     description = models.TextField(blank=True)
     story = models.TextField(blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default_world.jpg', upload_to='world_images')
-    image_thumb = models.ImageField(default='default_world_thumb.jpg', upload_to='world_images/thumbs')
+    image = models.ImageField(upload_to='world_images', blank=True)
+    image_thumb = models.ImageField(upload_to='world_images/thumbs', blank=True)
     image_credit = models.CharField(max_length=120, blank=True)
     str_name = models.CharField(max_length=200, blank=True)
 
@@ -106,8 +106,8 @@ class Tile(models.Model):
     story = models.TextField(blank=True)
     world = models.ForeignKey(World, on_delete=models.CASCADE)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default_tile.jpg', upload_to='tile_images')
-    image_thumb = models.ImageField(default='default_tile_thumb.jpg', upload_to='tile_images/thumbs')
+    image = models.ImageField(upload_to='tile_images', blank=True)
+    image_thumb = models.ImageField(upload_to='tile_images/thumbs', blank=True)
     image_credit = models.CharField(max_length=120, blank=True)
     str_name = models.CharField(max_length=200, blank=True)
 
@@ -199,7 +199,6 @@ class Category(models.Model): # Tile will be the initial, default Category of Th
     story = models.TextField(blank=True)
     world = models.ForeignKey(World, on_delete=models.CASCADE)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    tile = models.ManyToManyField(Tile, blank=True) #Named incorrectly should be plural tiles, not singular tile
     created_tile_name = None
     str_name = models.CharField(max_length=200, blank=True)
 
@@ -234,8 +233,8 @@ class Thing(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=False)
     world = models.ForeignKey(World, on_delete=models.CASCADE)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default_thing.jpg', upload_to='thing_images')
-    image_thumb = models.ImageField(default='default_thing_thumb.jpg', upload_to='thing_images/thumbs')
+    image = models.ImageField(upload_to='thing_images', blank=True)
+    image_thumb = models.ImageField(upload_to='thing_images/thumbs', blank=True)
     image_credit = models.CharField(max_length=120, blank=True)
     tiles = models.ManyToManyField(Tile, blank=True)
     created_tile_name = None

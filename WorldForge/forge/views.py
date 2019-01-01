@@ -76,6 +76,7 @@ def world_detail(request, username, world_name):
     tiles = Tile.objects.filter(creator=user_obj, world=world)
     categories = Category.objects.filter(creator=user_obj, world=world)
     things = Thing.objects.filter(creator=user_obj, world=world)
+
     can_edit = False
     can_add_tile = False
     can_add_category = False
@@ -145,8 +146,9 @@ def tile_detail(request, username, world_name, tile_name):
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     tile = Tile.objects.get(creator=user_obj, world=world, name=tile_name)
-    categories = Category.objects.filter(creator=user_obj, world=world, tile=tile)
+    categories = Category.objects.filter(creator=user_obj, world=world)
     things = Thing.objects.filter(creator=user_obj, world=world, tiles__in=[tile])
+    all_things = Thing.objects.filter(creator=user_obj, world=world)
     can_edit = False
     can_add_category = False
     can_add_thing = False
@@ -158,7 +160,7 @@ def tile_detail(request, username, world_name, tile_name):
         if len(categories) < caps['max_categories_per_world']:
             can_add_category = True
 
-        if len(things) < caps['max_things_per_world']:
+        if len(all_things) < caps['max_things_per_world']:
             can_add_thing = True
 
     context = {
@@ -214,7 +216,8 @@ def category_detail(request, username, world_name, category_name):
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     category = Category.objects.get(creator=user_obj, world=world, name=category_name)
-    things = Thing.objects.filter(category=category)
+    things = Thing.objects.filter(creator=user_obj, world=world,category=category)
+    all_things = Thing.objects.filter(creator=user_obj, world=world)
     can_edit = False
     can_add_thing = False
 
@@ -222,7 +225,7 @@ def category_detail(request, username, world_name, category_name):
         can_edit = True
         caps = profile.get_caps()
 
-        if len(things) < caps['max_things_per_world']:
+        if len(all_things) < caps['max_things_per_world']:
             can_add_thing = True
 
     context = {
@@ -230,7 +233,7 @@ def category_detail(request, username, world_name, category_name):
         'can_add_thing': can_add_thing,
         'user_obj':user_obj,
         'world': world,
-        'category': category,
+        'categories': [category],
         'things': things,
         }
 
@@ -330,7 +333,6 @@ class TileCreateView(LoginRequiredMixin, CreateView):
         form.instance.creator = user
         form.instance.world = world
 
-        # Positions MUST account for the initial shift applied when moving from 0,0 point to list of list matrix (where the top leftmost essentially becomes 0,0)
         form.instance.horizontal_position = int(self.kwargs.get('h_pos'))
         form.instance.vertical_position = int(self.kwargs.get('v_pos'))
 
@@ -401,9 +403,6 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 
         form.instance.creator = user
         form.instance.world = world
-        super(CategoryCreateView, self).form_valid(form)
-        if tile_obj:
-            form.instance.tile.add(tile_obj)
 
         profile = Profile.objects.get(user=user)
         user_categories = Category.objects.filter(creator=user, world=world)
@@ -412,6 +411,8 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
         if len(user_categories) >= caps['max_categories_per_world']:
             messages.error(self.request, 'You cannot create any more Categories.')
             return redirect('forge_home')
+
+        super(CategoryCreateView, self).form_valid(form)
 
         return redirect(form.instance.get_absolute_url())
 
@@ -476,9 +477,6 @@ class ThingCreateView(LoginRequiredMixin, CreateView):
         form.instance.creator = user
         form.instance.world = world
         form.instance.category = category
-        super(ThingCreateView, self).form_valid(form)
-        if tile_obj:
-            form.instance.tiles.add(tile_obj)
 
         profile = Profile.objects.get(user=user)
         user_things = Thing.objects.filter(creator=user, world=world)
@@ -487,6 +485,10 @@ class ThingCreateView(LoginRequiredMixin, CreateView):
         if len(user_things) >= caps['max_things_per_world']:
             messages.error(self.request, 'You cannot create any more Things.')
             return redirect('forge_home')
+
+        super(ThingCreateView, self).form_valid(form)
+        if tile_obj:
+            form.instance.tiles.add(tile_obj)
 
         return redirect(form.instance.get_absolute_url())
 
@@ -526,11 +528,40 @@ class ThingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return False
 
 
+### TODO double check all edit/add items are disabled properly when cap is reached
+
+### TODO Delete category option?
 ### TODO collapse-able sections for Tiles/Categories on detail pages
 ### TODO Able to add existing Things to multiple tiles without leaving the page (click a button in each category to see list of existing things to add?)
 ### TODO Merge Detail and Update views so the user can view AND change a World/Tile/Category/Thing on the same page
 
-### TODO Disable registration (for now) make it so a user must be invited and given a username/password that they can then use and change password for
 ### TODO prettify pages, especially tile_index
 ### TODO option to start with a "templated" world? (start with a few categories already in place)
 ### TODO Prettify code :/
+
+"""
+Done:
+--------
+### make default image in static
+#       - serving static images when image/image_thumb is null (models now have imagefield -> blank=true)
+### remove Tile M2M from Categories, all categories should be listed for each tile
+#       - M2M field removed, kept some logic for proper redirects
+"""
+
+
+"""
+Pages:
+--------
+Home
+User Profile
+User Worlds
+Browse Worlds
+World Detail
+Tile Index
+Tile Detail
+Category Index
+Category Detail
+Thing Detail
+About Page
+"""
+

@@ -5,21 +5,17 @@
 {% endblock %}
 {% block content %}
   <div class="center-div">
-      <ul class="nav nav-pills nav-justified">
-          <li class="nav-item">
-            <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username %}">{{ user_obj.username }}</a>
-          </li>
-        </ul>
-    <hr/>
+    {% include 'forge/sub_nav.html' %}
     <h1>{{ user_obj.username }}</h1>
     <hr/>
     {% for world in worlds %}
       <div class="container mb-1 mr-1">
         <a href="{% url 'world_detail' user_obj.username world.name %}">
-          <img src="{{ world.image_thumb.url }}" title="{{ world.name }}" class="hover_img"/>
+            {% if world.image_thumb %}
+            <img src="{{ world.image_thumb.url }}" title="{{ world.name }}" class="hover_img"/>
+            {% else %}
+            <img src="{% static 'forge/default_world_thumb.jpg' %}"/>
+            {% endif %}
         </a>
       </div>
     {% endfor %}

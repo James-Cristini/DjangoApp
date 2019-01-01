@@ -7,24 +7,7 @@ Tile Index
 
 {% block content %}
 <div class="center-div">
-  <ul class="nav nav-pills nav-justified">
-      <li class="nav-item">
-        <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
-      </li>
-    <li class="nav-item">
-      <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username  %}">{{ user_obj.username }}</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
-      </li>
-  </ul>
-  <hr/>
+  {% include 'forge/sub_nav.html' %}
   <a href="{% url 'world_detail' user_obj.username world.name %}">
     <h1> {{ world.name }}</h1>
   </a>
@@ -50,7 +33,11 @@ Tile Index
               {% elif tile.creator %}
                 <td id="tile_thumb">
                   <a href="{% url 'tile_detail' tile.creator.username tile.world.name tile.name %}"  title="{{ tile.name }}">
-                    <img src="{{ tile.image.url }}" class="img-responsive" class="thumbnail">
+                      {% if tile.image %}
+                      <img src="{{ tile.image.url }}" class="img-responsive" class="thumbnail">
+                      {% else %}
+                      <img src="{% static 'forge/default_tile.jpg' %}"/>
+                      {% endif %}
                   </a>
                 </td>
               {% else %}

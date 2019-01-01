@@ -1,4 +1,5 @@
 {% extends 'forge/base.html' %}
+
 {% load static %}
 {% block title %}
 - World Detail
@@ -9,24 +10,7 @@
 
 {% if world.is_public or can_edit %}
   <div class='container center-div'>
-      <ul class="nav nav-pills nav-justified">
-          <li class="nav-item">
-            <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username %}">{{ user_obj.username }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
-            </li>
-        </ul>
-      <hr/>
+    {% include 'forge/sub_nav.html' %}
     <h1>{{ world.name }}
         {% if can_edit %}
         <a href="{% url 'update_world' world.pk user_obj.username world.name %}">(Edit)</a>
@@ -35,7 +19,11 @@
         {% endif %}
     </h1>
     <div class="img-responsive">
-      <img src="{{ world.image.url }}">
+        {% if world.image %}
+        <img src="{{ world.image.url }}">
+        {% else %}
+        <img src="{% static 'forge/default_world.jpg' %}"/>
+        {% endif %}
     </div>
   </br>
     <small>{{ world.genre }}</small>
@@ -46,78 +34,63 @@
     <a href="{% url 'tile_index' user_obj.username world.name %}">
       <h4>Tiles</h4>
     </a>
-    <div class="row-fluid">
-          <div class="horizontal-scroll-container">
-            {% for tile in tiles %}
-            <div class="horizontal-scroll-item">
-              <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">
-                <img src="{{ tile.image_thumb.url }}" title="{{ tile.name }}" class="hover_img">
-              </a>
-            </div>
-            {% endfor %}
-            {% if can_add_tile %}
-            <div class="horizontal-scroll-item">
-              <a href="{% url 'tile_index' user_obj.username world.name %}">
-                <img src="{% static 'forge/add_item.png' %}" title="Create New Tile" class="hover_img">
-              </a>
-            </div>
-            {% elif can_edit %}
-            <div class="horizontal-scroll-item">
-              <img src="{% static 'forge/add_item.png' %}" style="opacity:.3" title="Cannot create more Tiles">
-            </div>
-            {% endif %}
-          </div>
-    </div>
-  </div>
-  <hr/>
-  {% for category in categories %}
-    <div class="container">
-      <a href="{% url 'category_detail' user_obj.username world.name category.name %}">
-          <h4 style="text-decoration:none">{{ category.name }}</h4>
-      </a>
-      <div class="row">
-      {% for thing in things %}
-        {% if thing.category == category %}
+    <div class="row">
+        {% for tile in tiles %}
         <div class="mb-1 mr-1">
-          <a href="{% url 'thing_detail' user_obj.username world.name category.name thing.name %}">
-            <img src="{{ thing.image_thumb.url }}" title="{{ thing.name }}" class="hover_img">
+          <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">
+              {% if tile.image %}
+              <img src="{{ tile.image_thumb.url }}" title="{{ tile.name }}" class="hover_img">
+              {% else %}
+              <img src="{% static 'forge/default_tile_thumb.jpg' %}"/>
+              {% endif %}
           </a>
+        </div>
+        {% endfor %}
+        {% if can_add_tile %}
+        <div class="mb-1 mr-1">
+          <a href="{% url 'tile_index' user_obj.username world.name %}">
+            <img src="{% static 'forge/add_item.png' %}" title="Create New Tile" class="hover_img">
+          </a>
+        </div>
+        {% elif can_edit %}
+        <div class="mb-1 mr-1">
+          <img src="{% static 'forge/add_item.png' %}" style="opacity:.3" title="Cannot create more Tiles">
         </div>
         {% endif %}
-      {% endfor %}
-      {% if can_add_thing %}
-        <div class="mb-1 mr-1">
-          <a href="{% url 'create_thing' user_obj.username world.name 'created_from_world' category.name %}">
-            <img src="{% static 'forge/add_item.png' %}" title="New Thing" class="hover_img">
-          </a>
-        </div>
-      {% elif can_edit %}
-        <div class="mb-1 mr-1">
-          <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Things">
-        </div>
-      {% endif %}
-      </div>
     </div>
-    <hr/>
-  {% endfor %}
-  {% if can_add_category %}
-  <hr/>
-  <div class="container">
-    <a href="{% url 'create_category' user.username world.name 'created_from_world' %}">
-      <img src="{% static 'forge/add_item.png' %}" title="New Category" class="hover_img">
-    </a>
   </div>
-  {% elif can_edit %}
-    <div class="mb-1 mr-1">
-      <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Categories">
-    </div>
-  {% endif %}
+  <hr/>
+  {% include 'forge/categories_things.html' %}
 </div>
 <hr/>
 </br>
 {% else %}
 <h2> This world is set to private</h2>
 {% endif %}
+{% endblock %}
+<!--
+<div class="row-fluid">
+  <div class="horizontal-scroll-container">
+    {% for tile in tiles %}
+    <div class="horizontal-scroll-item">
+      <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">
+        <img src="{{ tile.image_thumb.url }}" title="{{ tile.name }}" class="hover_img">
+      </a>
+    </div>
+    {% endfor %}
+    {% if can_add_tile %}
+    <div class="horizontal-scroll-item">
+      <a href="{% url 'tile_index' user_obj.username world.name %}">
+        <img src="{% static 'forge/add_item.png' %}" title="Create New Tile" class="hover_img">
+      </a>
+    </div>
+    {% elif can_edit %}
+    <div class="horizontal-scroll-item">
+      <img src="{% static 'forge/add_item.png' %}" style="opacity:.3" title="Cannot create more Tiles">
+    </div>
+    {% endif %}
+  </div>
+</div>
 <style>
 .horizontal-scroll-container {
     height: 180px;
@@ -138,4 +111,4 @@
     background-size: cover;
 }
 </style>
-{% endblock %}
+-->

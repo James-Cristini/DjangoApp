@@ -1,24 +1,17 @@
 {% extends 'forge/base.html' %}
+{% load static %}
 {% block content %}
   <div class="center-div">
-    <ul class="nav nav-pills nav-justified">
-      <li class="nav-item">
-        <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
-      </li>
-      {% if user in users %}
-      <li class="nav-item">
-        <a class="nav-link {{ user_active }}" href="{% url 'world_index' user.username  %}">My Worlds</a>
-      </li>
-      {% endif %}
-    </ul>
-    <hr/>
-    <h1> Home Page</h1>
-  <hr/>
+    {% include 'forge/sub_nav.html' %}
   <div class="row">
   {% for profile in profiles %}
     <div class="center-col col-sm-1">
       <a href="{% url 'world_index' profile.user.username %}">
+        {% if profile.image_thumb %}
         <img src="{{ profile.image_thumb.url }}" title="{{ profile.user.username }}"/>
+        {% else %}
+        <img src="{% static 'forge/default_profile_thumb.jpg' %}" title="{{ profile.user.username }}"/>
+        {% endif %}
       </a>
       <small>{{ profile.user.username }}</small>
     </div>

@@ -1,72 +1,16 @@
 {% extends 'forge/base.html' %}
 {% load static %}
+
 {% block title %}
 - Category Index
 {% endblock %}
+
 {% block content %}
 {% if world.is_public or can_edit %}
   <div class="center-div">
-    <ul class="nav nav-pills nav-justified">
-      <li class="nav-item">
-        <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username  %}">{{ user_obj.username }}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
-      </li>
-      <li class="nav-item">
-          <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>
-        </li>
-    </ul>
-    <hr/>
+    {% include 'forge/sub_nav.html' %}
     <h1> Categories </h1>
-  {% for category in categories %}
-    <div class="container mb-1 mr-1" style="text-align: left">
-      <a href="{% url 'category_detail' user_obj.username world.name category.name %}">
-          <h4>{{ category.name }}</h4>
-      </a>
-      <div class="row">
-      {% for thing in things %}
-        {% if thing.category == category %}
-        <div class="mb-1 mr-1">
-          <a href="{% url 'thing_detail' user_obj.username world.name category.name thing.name %}">
-            <img src="{{ thing.image_thumb.url }}" title="{{ thing.name }}" class="hover_img">
-          </a>
-        </div>
-        {% endif %}
-      {% endfor %}
-      {% if can_add_thing %}
-          <div class="mb-1 mr-1">
-            <a href="{% url 'create_thing' user_obj.username world.name 'created_from_world' category.name %}">
-              <img src="{% static 'forge/add_item.png' %}" title="New Thing" class="hover_img">
-            </a>
-          </div>
-        {% elif can_edit %}
-          <div class="mb-1 mr-1">
-            <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Things">
-          </div>
-        {% endif %}
-      </div>
-    </div>
-    <hr/>
-  {% endfor %}
-  <hr/>
-  {% if can_add_category %}
-    <div class="container">
-      <a href="{% url 'create_category' user.username world.name 'created_from_world' %}">
-        <img src="{% static 'forge/add_item.png' %}" title="New Category" class="hover_img">
-      </a>
-    </div>
-  {% elif can_edit %}
-    <div class="mb-1 mr-1">
-      <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Categories">
-    </div>
-  {% endif %}
+    {% include 'forge/categories_things.html' %}
   </div>
 {% else %}
   <h2> This world is set to private</h2>

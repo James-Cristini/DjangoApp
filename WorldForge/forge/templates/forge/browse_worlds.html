@@ -1,11 +1,16 @@
 {% extends 'forge/base.html' %}
+{% load static %}
 {% block content %}
 <div class="paragraphs">
   <div class="row">
   {% for world in worlds %}
     <div class="span4 mb-2">
       <a href="{% url 'tile_index' world.creator.username world.name %}">
+        {% if world.image_thumb %}
         <img class="mr-1 hover_img" style="float:left" src="{{ world.image_thumb.url }}"/>
+        {% else %}
+        <img class="mr-1 hover_img" style="float:left" src="{% static 'forge/default_world_thumb.jpg' %}"/>
+        {% endif %}
       </a>
       <div class="content-heading" style=" overflow:hidden; line-height: 1.2em; max-height: 7.2em">
         <h3>{{ world.name }}</h3>
