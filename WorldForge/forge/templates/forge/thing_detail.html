@@ -24,14 +24,20 @@
     <img src="{% static 'forge/default_thing.jpg' %}"/>
     {% endif %}
   </br></br>
-    <p>{{ thing.description }}</p>
+    <p class="description-content">{{ thing.description | linebreaksbr }}</p>
     <hr class="mb-2 mr-4"/>
-    <p>{{ thing.story }}</p>
+    <p class="story-content">{{ thing.story | linebreaksbr }}</p>
   </div>
   </br>
   {% for tile in tiles %}
   <div class="container mb-1 mr-1">
-    <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">{{ tile.name }}</a>
+    <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">
+      {% if tile.image_thumb %}
+      <img src="{{ tile.image_thumb.url }}" class="img-fluid" title="{{ tile.name }}"/>
+      {% else %}
+      <img src="{% static 'forge/default_tile_thumb' %}" class="img-fluid" title="{{ tile.name }}"/>
+      {% endif %}
+    </a>
   </div>
   <hr/>
   {% endfor %}

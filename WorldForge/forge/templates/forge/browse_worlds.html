@@ -1,23 +1,24 @@
 {% extends 'forge/base.html' %}
 {% load static %}
 {% block content %}
-<div class="paragraphs">
+<div class="center-div">
+    {% include 'forge/sub_nav.html' %}
+</div>
+<div class="container">
   <div class="row">
   {% for world in worlds %}
-    <div class="span4 mb-2">
+    <div class="span4 mb-2" style="height: 100%; margin-left: 10px; width: 1110px; min-width: 500px; overflow-y: scroll; border: 1px solid lightgray">
       <a href="{% url 'tile_index' world.creator.username world.name %}">
         {% if world.image_thumb %}
-        <img class="mr-1 hover_img" style="float:left" src="{{ world.image_thumb.url }}"/>
+        <img class="mr-1 hover_img img-fluid float-left" style="height: 100%; margin:auto;" src="{{ world.image_thumb.url }}"/>
         {% else %}
-        <img class="mr-1 hover_img" style="float:left" src="{% static 'forge/default_world_thumb.jpg' %}"/>
+        <img class="mr-1 hover_img img-fluid float-left" src="{% static 'forge/default_world_thumb.jpg' %}"/>
         {% endif %}
       </a>
-      <div class="content-heading" style=" overflow:hidden; line-height: 1.2em; max-height: 7.2em">
+      <div class="content-heading ml-1">
         <h3>{{ world.name }}</h3>
-        <p>{{ world.description }}</p>
+        <p class="description-content">{{ world.description | linebreaksbr  }}</p>
       </div>
-      <p>. . .</p>
-      <div style="clear:both"></div>
     </div>
   {% endfor %}
   </div>

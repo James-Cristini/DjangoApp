@@ -13,8 +13,7 @@ Tile Index
   </a>
 </div>
 <div>
-  </br></br>
-    <table id="tile_table">
+    <table id="tile_table" style="width:1500px; overflow-x: scroll;">
       <tbody>
         {% if tile_matrix %}
           {% for tile_row in tile_matrix %}
@@ -23,18 +22,18 @@ Tile Index
               {% if tile.adj and can_add_tile %}
                 <td class="blank_adj">
                   <a href="{% url 'create_tile' user_obj.username world.name tile.h_pos tile.v_pos %}">
-                    <img src="{% static 'forge/blank_adj.jpg' %}" class="img-responsive" class="blank_adj thumbnail">
+                    <img src="{% static 'forge/blank_adj.jpg' %}" class="blank_adj thumbnail">
                   </a>
                 </td>
               {% elif tile.adj and can_edit %}
                 <td class="blank_adj">
-                  <img src="{% static 'forge/blank_adj.jpg' %}" class="img-responsive" class="blank_adj thumbnail" style="opacity:.3" title="Cannot add more tiles">
+                  <img src="{% static 'forge/blank_adj_disabled.jpg' %}"  class="blank_adj thumbnail" title="Cannot add more tiles">
                 </td>
               {% elif tile.creator %}
                 <td id="tile_thumb">
                   <a href="{% url 'tile_detail' tile.creator.username tile.world.name tile.name %}"  title="{{ tile.name }}">
                       {% if tile.image %}
-                      <img src="{{ tile.image.url }}" class="img-responsive" class="thumbnail">
+                      <img src="{{ tile.image.url }}" class="thumbnail">
                       {% else %}
                       <img src="{% static 'forge/default_tile.jpg' %}"/>
                       {% endif %}
@@ -42,7 +41,7 @@ Tile Index
                 </td>
               {% else %}
               <td id="blank_thumb">
-                <img src="{% static 'forge/blank.jpg' %}" class="img-responsive" class="blank thumbnail">
+                <img src="{% static 'forge/blank.jpg' %}" class="blank thumbnail">
               </td>
               {% endif %}
             </td>
@@ -56,12 +55,7 @@ Tile Index
     </table>
   </div>
   <style>
-  table {
-    margin: 0 auto;
-  }
-  .blank_adj:hover {
-    opacity:.5;
-  }
+
   </style>
   <script>
   </script>

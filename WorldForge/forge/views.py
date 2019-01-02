@@ -35,16 +35,20 @@ def home(request):
 
 def browse_worlds(request):
     """ """
+    users = User.objects.all()
     worlds = World.objects.filter(is_public=True).order_by('name')
 
     context = {
-        'worlds': worlds
+        'users': users,
+        'worlds': worlds,
+        'browse_active': 'active',
         }
 
     return render(request, 'forge/browse_worlds.html', context)
 
 def world_index(request, username):
     """ List of ALL of the user's worlds """
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     profile = Profile.objects.get(user=user_obj)
     worlds = World.objects.filter(creator=user_obj)
@@ -52,30 +56,38 @@ def world_index(request, username):
     can_add_world = False
 
     if request.user == user_obj:
+        user_active = 'active'
+        user_obj_active = None
         can_edit = True
         caps = profile.get_caps()
 
         if len(worlds) < caps['max_worlds']:
             can_add_world = True
+    else:
+        user_active = None
+        user_obj_active = 'active'
 
     context = {
+        'users': users,
         'can_edit': can_edit,
         'can_add_world': can_add_world,
         'user_obj':user_obj,
         'worlds': worlds,
-        'user_active': 'active',
+        'user_active': user_active,
+        'user_obj_active': user_obj_active,
         }
 
     return render(request, 'forge/world_index.html', context)
 
 def world_detail(request, username, world_name):
     """ Detail page for the given world, shows all Tiles with optional hide/show Categories/Thing list"""
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
-    tiles = Tile.objects.filter(creator=user_obj, world=world)
-    categories = Category.objects.filter(creator=user_obj, world=world)
-    things = Thing.objects.filter(creator=user_obj, world=world)
+    tiles = Tile.objects.filter(creator=user_obj, world=world).order_by('pk')
+    categories = Category.objects.filter(creator=user_obj, world=world).order_by('pk')
+    things = Thing.objects.filter(creator=user_obj, world=world).order_by('pk')
 
     can_edit = False
     can_add_tile = False
@@ -96,6 +108,7 @@ def world_detail(request, username, world_name):
             can_add_thing = True
 
     context = {
+        'users': users,
         'can_edit': can_edit,
         'can_add_tile': can_add_tile,
         'can_add_category': can_add_category,
@@ -111,6 +124,7 @@ def world_detail(request, username, world_name):
     return render(request, 'forge/world_detail.html', context)
 
 def tile_index(request, username, world_name):
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
@@ -129,6 +143,7 @@ def tile_index(request, username, world_name):
             can_add_tile = True
 
     context = {
+        'users': users,
         'can_edit': can_edit,
         'can_add_tile': can_add_tile,
         'user_obj':user_obj,
@@ -142,13 +157,14 @@ def tile_index(request, username, world_name):
 
 def tile_detail(request, username, world_name, tile_name):
     """ Detail page for a specific Thing. """
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     tile = Tile.objects.get(creator=user_obj, world=world, name=tile_name)
-    categories = Category.objects.filter(creator=user_obj, world=world)
-    things = Thing.objects.filter(creator=user_obj, world=world, tiles__in=[tile])
-    all_things = Thing.objects.filter(creator=user_obj, world=world)
+    categories = Category.objects.filter(creator=user_obj, world=world).order_by('pk')
+    things = Thing.objects.filter(creator=user_obj, world=world, tiles__in=[tile]).order_by('pk')
+    all_things = Thing.objects.filter(creator=user_obj, world=world).order_by('pk')
     can_edit = False
     can_add_category = False
     can_add_thing = False
@@ -164,6 +180,7 @@ def tile_detail(request, username, world_name, tile_name):
             can_add_thing = True
 
     context = {
+        'users': users,
         'can_edit': can_edit,
         'can_add_category': can_add_category,
         'can_add_thing': can_add_thing,
@@ -178,11 +195,12 @@ def tile_detail(request, username, world_name, tile_name):
 
 def category_index(request, username, world_name):
     """ Show just an index of ALL categories within the given world. """
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
-    categories = Category.objects.filter(creator=user_obj, world=world)
-    things = Thing.objects.filter(creator=user_obj, world=world)
+    categories = Category.objects.filter(creator=user_obj, world=world).order_by('pk')
+    things = Thing.objects.filter(creator=user_obj, world=world).order_by('pk')
     can_edit = False
     can_add_category = False
     can_add_thing = False
@@ -198,6 +216,7 @@ def category_index(request, username, world_name):
             can_add_thing = True
 
     context = {
+        'users': users,
         'can_edit': can_edit,
         'can_add_category': can_add_category,
         'can_add_thing': can_add_thing,
@@ -212,12 +231,13 @@ def category_index(request, username, world_name):
 
 def category_detail(request, username, world_name, category_name):
     """ Details a specific category, functions as an item index for that category as well. """
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     profile = Profile.objects.get(user=user_obj)
     world = World.objects.get(creator=user_obj, name=world_name)
     category = Category.objects.get(creator=user_obj, world=world, name=category_name)
-    things = Thing.objects.filter(creator=user_obj, world=world,category=category)
-    all_things = Thing.objects.filter(creator=user_obj, world=world)
+    things = Thing.objects.filter(creator=user_obj, world=world,category=category).order_by('pk')
+    all_things = Thing.objects.filter(creator=user_obj, world=world).order_by('pk')
     can_edit = False
     can_add_thing = False
 
@@ -229,6 +249,7 @@ def category_detail(request, username, world_name, category_name):
             can_add_thing = True
 
     context = {
+        'users': users,
         'can_edit': can_edit,
         'can_add_thing': can_add_thing,
         'user_obj':user_obj,
@@ -241,6 +262,7 @@ def category_detail(request, username, world_name, category_name):
 
 def thing_detail(request, username, world_name, category_name, thing_name):
     """ Detail page for a specific Thing. """
+    users = User.objects.all()
     user_obj = User.objects.get(username=username)
     world = World.objects.get(creator=user_obj, name=world_name)
     category = Category.objects.get(creator=user_obj, world=world, name=category_name)
@@ -248,6 +270,7 @@ def thing_detail(request, username, world_name, category_name, thing_name):
     tiles = thing.tiles.all()
     can_edit = True if request.user == user_obj else False
     context = {
+        'users': users,
         'can_edit': can_edit,
         'user_obj':user_obj,
         'world': world,
@@ -527,28 +550,6 @@ class ThingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             messages.error(self.request, 'You do not have permission to edit that.')
             return False
 
-
-### TODO double check all edit/add items are disabled properly when cap is reached
-
-### TODO Delete category option?
-### TODO collapse-able sections for Tiles/Categories on detail pages
-### TODO Able to add existing Things to multiple tiles without leaving the page (click a button in each category to see list of existing things to add?)
-### TODO Merge Detail and Update views so the user can view AND change a World/Tile/Category/Thing on the same page
-
-### TODO prettify pages, especially tile_index
-### TODO option to start with a "templated" world? (start with a few categories already in place)
-### TODO Prettify code :/
-
-"""
-Done:
---------
-### make default image in static
-#       - serving static images when image/image_thumb is null (models now have imagefield -> blank=true)
-### remove Tile M2M from Categories, all categories should be listed for each tile
-#       - M2M field removed, kept some logic for proper redirects
-"""
-
-
 """
 Pages:
 --------
@@ -565,3 +566,26 @@ Thing Detail
 About Page
 """
 
+### TODO double check all edit/add items are disabled properly when cap is reached
+### TODO keep sub_nav affixed on horizontal scroll (especially on tile index page)
+### TODO Able to add existing Things to multiple tiles without leaving the page (click a button in each category to see list of existing things to add?)
+### TODO Merge Detail and Update views so the user can view AND change a World/Tile/Category/Thing on the same page
+
+### TODO prettify pages, especially tile_index
+### TODO option to start with a "templated" world? (start with a few categories already in place)
+### TODO Prettify code :/
+
+"""
+### TODO collapse-able sections for Tiles/Categories on detail pages XXX Started
+
+### Delete category option?
+#       - Added delete category option back
+
+--------
+Done: 1/1/19
+--------
+### make default image in static
+#       - serving static images when image/image_thumb is null (models now have imagefield -> blank=true)
+### remove Tile M2M from Categories, all categories should be listed for each tile
+#       - M2M field removed, kept some logic for proper redirects
+"""

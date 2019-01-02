@@ -1,21 +1,37 @@
 {% load static %}
+
 {% for category in categories %}
-    <div class="container">
-      <a href="{% url 'category_detail' user_obj.username world.name category.name %}">
-          <h4 style="text-decoration:none">{{ category.name }}</h4>
-      </a>
-      <div class="row">
+<div class="card">
+  {% if single_category %}
+  <div class="card-header" role="tab" id="headingTwo">
+        <h1 class="float-left" style="text-decoration:none">{{ category.name }}</h1>
+  </div>
+  <div class="card-body">
+    <p class="description-content">
+      {{ category.description }}
+    </p>
+  </div>
+  {% else %}
+  <div class="card-header" role="tab" id="headingTwo">
+        <a class="collapsed" data-toggle="collapse" href="#collapse{{ category.name }}" aria-expanded="true" aria-controls="collapseTwo">
+            <h3 class="float-right" style="text-decoration:none">+/-</h3></a>
+            <a href="{% url 'category_detail' user_obj.username category.world.name category.name %}">
+              <h3 class="float-left" style="text-decoration:none">{{ category.name }}</h3></a>
+    </div>
+  {% endif %}
+  <div id="collapse{{ category.name }}" class="collapse show" role="tabpanel" aria-labelledby="headingTwo">
+    <div class="card-body row">
       {% for thing in things %}
         {% if thing.category == category %}
-        <div class="mb-1 mr-1">
-          <a href="{% url 'thing_detail' user_obj.username world.name category.name thing.name %}">
-            {% if thing.image_thumb %}
-            <img src="{{ thing.image_thumb.url }}" title="{{ thing.name }}" class="hover_img">
-            {% else %}
-            <img src="{% static 'forge/default_thing_thumb.jpg' %}" title="{{ thing.name }}" class="hover_img">
-            {% endif %}
-          </a>
-        </div>
+          <div class="mb-1 mr-1">
+            <a href="{% url 'thing_detail' user_obj.username world.name category.name thing.name %}">
+              {% if thing.image_thumb %}
+              <img src="{{ thing.image_thumb.url }}" title="{{ thing.name }}" class="hover_img">
+              {% else %}
+              <img src="{% static 'forge/default_thing_thumb.jpg' %}" title="{{ thing.name }}" class="hover_img">
+              {% endif %}
+            </a>
+          </div>
         {% endif %}
       {% endfor %}
       {% if can_add_thing %}
@@ -29,10 +45,10 @@
           <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Things">
         </div>
       {% endif %}
-      </div>
     </div>
-    <hr/>
-  {% endfor %}
+  </div>
+</div>
+{% endfor %}
   {% if can_add_category %}
   <hr/>
   <div class="container">
@@ -51,3 +67,10 @@
       <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Categories">
     </div>
   {% endif %}
+  <style>
+    a h1:hover, h2:hover, h3:hover, h4:hover, h5:hover{
+  opacity: .5;
+}
+  </style>
+<script>
+</script>

@@ -1,0 +1,42 @@
+{% load static %}
+
+  <div class="card">
+    <div class="card-header" role="tab" id="headingOne">
+      <h5 class="mb-0">
+        <a data-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <h3 class="float-right" style="text-decoration:none">+/-</h3>
+          <a href="{% url 'tile_index' user_obj.username world.name %}">
+            <h3 class="float-left" style="text-decoration:none">Tiles</h3>
+          </a>
+        </a>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+      <div class="row card-body">
+      {% for tile in tiles %}
+        <div class="mb-1 mr-1">
+          <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">
+              {% if tile.image %}
+              <img src="{{ tile.image_thumb.url }}" title="{{ tile.name }}" class="hover_img img-fluid">
+              {% else %}
+              <img src="{% static 'forge/default_tile_thumb.jpg' %}"/>
+              {% endif %}
+          </a>
+        </div>
+      {% endfor %}
+      {% if can_add_tile %}
+        <div class="mb-1 mr-1">
+          <a href="{% url 'tile_index' user_obj.username world.name %}">
+            <img src="{% static 'forge/add_tile.jpg' %}" title="Create New Tile" class="hover_img">
+          </a>
+        </div>
+      {% elif can_edit %}
+        <div class="mb-1 mr-1">
+          <img src="{% static 'forge/add_tile_disabled.jpg' %}" style="opacity:.3" title="Cannot create more Tiles">
+        </div>
+      {% endif %}
+      </div>
+    </div>
+  </div>
+

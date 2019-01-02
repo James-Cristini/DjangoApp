@@ -2,13 +2,17 @@
     <li class="nav-item">
       <a class="nav-link {{ home_active }}" href="{% url 'forge_home' %}">Home</a>
     </li>
-    {% if user_obj %}
     <li class="nav-item">
-      <a class="nav-link {{ user_active }}" href="{% url 'world_index' user_obj.username %}">{{ user_obj.username }}</a>
+      <a class="nav-item nav-link {{ browse_active }}" href="{% url 'browse_worlds' %}">Browse</a>
     </li>
-    {% elif user in users %}
+    {% if user in users %}
     <li class="nav-item">
       <a class="nav-link {{ user_active }}" href="{% url 'world_index' user.username  %}">My Worlds</a>
+    </li>
+    {% endif %}
+    {% if user_obj and user_obj != user %}
+    <li class="nav-item">
+      <a class="nav-link {{ user_obj_active }}" href="{% url 'world_index' user_obj.username %}">{{ user_obj.username }}</a>
     </li>
     {% endif %}
     {% if user_obj and world %}
@@ -16,7 +20,7 @@
       <a class="nav-link {{ world_active }}" href="{% url 'world_detail' user_obj.username world.name %}">{{ world.name }}</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tile Index</a>
+      <a class="nav-link {{ tiles_active }}" href="{% url 'tile_index' user_obj.username world.name %}">Tiles</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {{ categories_active }}" href="{% url 'category_index' user_obj.username world.name  %}">Categories</a>

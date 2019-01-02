@@ -14,51 +14,21 @@
     <h1>{{ world.name }}
         {% if can_edit %}
         <a href="{% url 'update_world' world.pk user_obj.username world.name %}">(Edit)</a>
-        {% else %}
-        <a href="{% url 'world_index' user_obj.username %}">({{ user_obj.username }})</a>
         {% endif %}
     </h1>
-    <div class="img-responsive">
+    <div>
         {% if world.image %}
-        <img src="{{ world.image.url }}">
+        <img src="{{ world.image.url }}" class="img-fluid">
         {% else %}
-        <img src="{% static 'forge/default_world.jpg' %}"/>
+        <img src="{% static 'forge/default_world.jpg' %}" class="img-fluid"/>
         {% endif %}
     </div>
   </br>
     <small>{{ world.genre }}</small>
-    <p>{{ world.description }}</p>
-    <p>{{ world.story }}</p>
+    <p class="description-content">{{ world.description | linebreaksbr }}</p>
+    <p class="story-content">{{ world.story | linebreaksbr }}</p>
   <hr/>
-  <div class="container">
-    <a href="{% url 'tile_index' user_obj.username world.name %}">
-      <h4>Tiles</h4>
-    </a>
-    <div class="row">
-        {% for tile in tiles %}
-        <div class="mb-1 mr-1">
-          <a href="{% url 'tile_detail' user_obj.username world.name tile.name %}">
-              {% if tile.image %}
-              <img src="{{ tile.image_thumb.url }}" title="{{ tile.name }}" class="hover_img">
-              {% else %}
-              <img src="{% static 'forge/default_tile_thumb.jpg' %}"/>
-              {% endif %}
-          </a>
-        </div>
-        {% endfor %}
-        {% if can_add_tile %}
-        <div class="mb-1 mr-1">
-          <a href="{% url 'tile_index' user_obj.username world.name %}">
-            <img src="{% static 'forge/add_item.png' %}" title="Create New Tile" class="hover_img">
-          </a>
-        </div>
-        {% elif can_edit %}
-        <div class="mb-1 mr-1">
-          <img src="{% static 'forge/add_item.png' %}" style="opacity:.3" title="Cannot create more Tiles">
-        </div>
-        {% endif %}
-    </div>
-  </div>
+  {% include 'forge/tile_list.html' %}
   <hr/>
   {% include 'forge/categories_things.html' %}
 </div>

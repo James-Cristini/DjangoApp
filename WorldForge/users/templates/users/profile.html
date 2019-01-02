@@ -1,5 +1,6 @@
 {% extends 'forge/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
   <div class="content-section">
     <div class="media">
@@ -33,7 +34,11 @@
     <h1>My Worlds</h1>
     {% for world in user_worlds %}
       <div class="mb-2">
+        {% if world.image_thumb %}
         <img src="{{ world.image_thumb.url }}">
+        {% else %}
+        <img src="{% static 'forge/default_world_thumb.jpg' %}">
+        {% endif %}
         <a href= "{% url 'world_detail' user.username world.name %}"><button class="btn btn-outline-primary">View</button></a>
         <a href= "{% url 'delete_world' world.pk user.username world.name %}"><button class="btn btn-outline-danger">Delete</button></a>
       </div>

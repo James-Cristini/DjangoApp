@@ -4,12 +4,12 @@
 - World Index
 {% endblock %}
 {% block content %}
-  <div class="center-div">
+<div class="center-div">
     {% include 'forge/sub_nav.html' %}
     <h1>{{ user_obj.username }}</h1>
     <hr/>
     {% for world in worlds %}
-      <div class="container mb-1 mr-1">
+      <div class="mb-1 mr-1">
         <a href="{% url 'world_detail' user_obj.username world.name %}">
             {% if world.image_thumb %}
             <img src="{{ world.image_thumb.url }}" title="{{ world.name }}" class="hover_img"/>

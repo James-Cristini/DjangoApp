@@ -1,11 +1,11 @@
 {% extends 'forge/base.html' %}
 {% load static %}
 {% block content %}
-  <div class="center-div">
+<div class="center-div">
     {% include 'forge/sub_nav.html' %}
   <div class="row">
   {% for profile in profiles %}
-    <div class="center-col col-sm-1">
+    <div class="col-sm-2 mr-1">
       <a href="{% url 'world_index' profile.user.username %}">
         {% if profile.image_thumb %}
         <img src="{{ profile.image_thumb.url }}" title="{{ profile.user.username }}"/>
@@ -18,7 +18,7 @@
   {% endfor %}
 </div>
   <hr/>
-  <div class="container mb-1 mr-1">
+  <div class="mb-1 mr-1">
     <h3>In the future this section will contain news and updates</h3>
   <hr/>
     <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent feugiat velit urna, non luctus est hendrerit quis. Quisque vehicula malesuada risus non hendrerit. Suspendisse potenti. Sed ullamcorper vestibulum turpis in volutpat. Ut ante arcu, tristique eu justo laoreet, porta vulputate ligula. Donec eget bibendum lacus. Curabitur et augue at nunc pharetra placerat. Pellentesque suscipit facilisis est ut aliquet. Nunc in maximus nunc. Nullam consequat, orci sit amet efficitur ultricies, lorem nunc pharetra arcu, eu lacinia mi est quis urna. Mauris ornare, ex eu sodales faucibus, lacus tellus laoreet ipsum, vitae auctor elit enim sit amet risus. Donec porta in magna et pretium. Sed auctor vel risus sollicitudin pharetra.</p>

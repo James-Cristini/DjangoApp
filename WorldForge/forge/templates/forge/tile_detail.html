@@ -19,14 +19,14 @@
     </h1>
   <div class="container">
       {% if tile.image %}
-      <img src="{{ tile.image.url }}"/>
+      <img src="{{ tile.image.url }}" class="img-fluid"/>
       {% else %}
-      <img src="{% static 'forge/default_tile.jpg' %}"/>
+      <img src="{% static 'forge/default_tile.jpg' %}" class="img-fluid"/>
       {% endif %}
   </div>
   <div class="container">
-  <p> {{ tile.description }}</p>
-  <p> {{ tile.story }}</p>
+  <p class="description-content"> {{ tile.description | linebreaksbr }}</p>
+  <p class="story-content"> {{ tile.story | linebreaksbr }}</p>
   <hr/>
   {% include 'forge/categories_things.html' %}
   </div>
