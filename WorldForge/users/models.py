@@ -47,8 +47,8 @@ PROFILE_THUMB_SIZE = (99, 66)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default_profile.jpg', upload_to='profile_pics')
-    image_thumb = models.ImageField(default='default_profile_thumb.jpg', upload_to='profile_pics/thumbs')
+    image = models.ImageField(blank=True, upload_to='profile_pics')
+    image_thumb = models.ImageField(blank=True, upload_to='profile_pics/thumbs')
 
     user_tier = models.IntegerField(default=1)
 

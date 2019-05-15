@@ -49,23 +49,25 @@
   </div>
 </div>
 {% endfor %}
-  {% if can_add_category %}
-  <hr/>
-  <div class="container">
-    {% if tile.name %}
-    <a href="{% url 'create_category' user.username world.name tile.name %}">
-    {% elif categories_active %}
-    <a href="{% url 'create_category' user.username world.name 'created_from_category_index' %}">
-    {% else %}
-    <a href="{% url 'create_category' user.username world.name 'created_from_world' %}">
-    {% endif %}
-    <img src="{% static 'forge/add_item.png' %}" title="New Category" class="hover_img">
-    </a>
-  </div>
-  {% elif can_edit %}
-    <div class="mb-1 mr-1">
-      <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Categories">
+  {% if not single_category %}
+    {% if can_add_category %}
+    <hr/>
+    <div class="container">
+      {% if tile.name %}
+      <a href="{% url 'create_category' user.username world.name tile.name %}">
+      {% elif categories_active %}
+      <a href="{% url 'create_category' user.username world.name 'created_from_category_index' %}">
+      {% else %}
+      <a href="{% url 'create_category' user.username world.name 'created_from_world' %}">
+      {% endif %}
+      <img src="{% static 'forge/add_item.png' %}" title="New Category" class="hover_img">
+      </a>
     </div>
+    {% elif can_edit %}
+      <div class="mb-1 mr-1">
+        <img src="{% static 'forge/add_item.png' %}" class="hover_img" style="opacity:.3" title="Cannot Create More Categories">
+      </div>
+    {% endif %}
   {% endif %}
   <style>
     a h1:hover, h2:hover, h3:hover, h4:hover, h5:hover{

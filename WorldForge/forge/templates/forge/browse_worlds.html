@@ -7,15 +7,15 @@
 <div class="container">
   <div class="row">
   {% for world in worlds %}
-    <div class="span4 mb-2" style="height: 100%; margin-left: 10px; width: 1110px; min-width: 500px; overflow-y: scroll; border: 1px solid lightgray">
-      <a href="{% url 'tile_index' world.creator.username world.name %}">
+    <div class="span4 mb-2" style="max-height:250px; margin-left: 10px; width: 1110px; min-width: 500px; border: 1px solid lightgray">
+      <a href="{% url 'world_detail' world.creator.username world.name %}">
         {% if world.image_thumb %}
         <img class="mr-1 hover_img img-fluid float-left" style="height: 100%; margin:auto;" src="{{ world.image_thumb.url }}"/>
         {% else %}
         <img class="mr-1 hover_img img-fluid float-left" src="{% static 'forge/default_world_thumb.jpg' %}"/>
         {% endif %}
       </a>
-      <div class="content-heading ml-1">
+      <div class="content-heading ml-1" style="overflow-y: scroll; max-height:250px;">
         <h3>{{ world.name }}</h3>
         <p class="description-content">{{ world.description | linebreaksbr  }}</p>
       </div>
